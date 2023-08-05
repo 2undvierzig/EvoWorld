@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <h1>Move the square</h1>
+  <button onclick="moveSquare(45, 10, 100)">Move</button>
+  <div id="game-board">
+    <div class="square" id="square"></div>
+  </div>
+  <style>
+    #game-board {
+      border: 1px solid black;
+      width: 800px;
+      height: 600px;
+      position: relative;
+    }
+    .square {
+      position: absolute;
+      width: 50px;
+      height: 50px;
+      background: red;
+      top: 50%;
+      left: 50%;
+    }
+  </style>
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
