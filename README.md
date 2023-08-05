@@ -1,2 +1,2 @@
 # EvoWorld
- Svolution simualator for 2D creatures
+ Evolution simualator for 2D creatures
