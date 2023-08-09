@@ -1,27 +1,13 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pixi.js with Flask</title>
+</head>
 <body>
-  <h1>Move the square</h1>
-  <button onclick="moveSquare(45, 10, 100)">Move</button>
-  <div id="game-board">
-    <div class="square" id="square"></div>
-  </div>
-  <style>
-    #game-board {
-      border: 1px solid black;
-      width: 800px;
-      height: 600px;
-      position: relative;
-    }
-    .square {
-      position: absolute;
-      width: 50px;
-      height: 50px;
-      background: red;
-      top: 50%;
-      left: 50%;
-    }
-  </style>
-  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.2.4/pixi.min.js" integrity="sha512-Ch/O6kL8BqUwAfCF7Ie5SX1Hin+BJgYH4pNjRqXdTEqMsis1TUYg+j6nnI9uduPjGaj7DN4UKCZgpvoExt6dkw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="{{ url_for('static', filename='js/your_script.js') }}"></script>
 </body>
 </html>
