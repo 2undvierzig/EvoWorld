@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Particle Simulation</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.2.4/pixi.min.js" integrity="sha512-Ch/O6kL8BqUwAfCF7Ie5SX1Hin+BJgYH4pNjRqXdTEqMsis1TUYg+j6nnI9uduPjGaj7DN4UKCZgpvoExt6dkw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+</head>
+<body>
+    <script>
+        let app = new PIXI.Application({ width: 300, height: 300 });
+        document.body.appendChild(app.view);
+
+        let circle = new PIXI.Graphics();
+        circle.beginFill(0xFF0000);
+        circle.drawCircle(0, 0, 10);
+        circle.endFill();
+        app.stage.addChild(circle);
+
+        // WebSocket
+        let ws = new WebSocket("ws://127.0.0.1:8000/ws");
+        ws.onopen = () => {
+            console.log("WebSocket connection established.");
+            ws.send("request_particles");
+        };
+        ws.onmessage = (event) => {
+            let data = JSON.parse(event.data);
+            console.log(`Received data from server: ${JSON.stringify(data)}`);
+            circle.x = data.x;
+            circle.y = data.y;
+        };
+        ws.onerror = (error) => {
+            console.error("WebSocket Error:", error);
+        };
+        ws.onclose = (event) => {
+            if (event.wasClean) {
+                console.log(`Connection closed cleanly, code=${event.code}, reason=${event.reason}`);
+            } else {
+                console.error("Connection died");
+            }
+        };
+
+    </script>
+</body>
+</html>
