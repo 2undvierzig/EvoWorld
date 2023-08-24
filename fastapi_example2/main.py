@@ -8,7 +8,7 @@ app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 particles = []
-for i in range(1,500):
+for i in range(1,20):
     p = {"id": i, "x": random.randint(100, 700), "y": random.randint(100, 700)}
     particles.append(p)
 
@@ -29,8 +29,8 @@ async def websocket_endpoint(websocket: WebSocket):
     # Update particles
     while True:
         for particle in particles:
-            particle["x"] += random.randint(-100, 100)
-            particle["y"] += random.randint(-100, 100)
+            particle["x"] += random.randint(-1000, 1000)
+            particle["y"] += random.randint(-1000, 1000)
         
         await websocket.send_json(particles)
         print(f"Sent updated particle data to client: {particles}")

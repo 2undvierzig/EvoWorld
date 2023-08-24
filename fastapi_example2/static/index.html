@@ -8,6 +8,9 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.2.4/pixi.min.js" integrity="sha512-Ch/O6kL8BqUwAfCF7Ie5SX1Hin+BJgYH4pNjRqXdTEqMsis1TUYg+j6nnI9uduPjGaj7DN4UKCZgpvoExt6dkw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>
     const app = new PIXI.Application({ width: 1000, height: 1000 });
+    app.ticker.add(() => {
+        //console.log("FPS:", app.ticker.FPS);
+    });
     document.body.appendChild(app.view);
 
     const particles = {};
@@ -24,34 +27,35 @@
             particles[particleData.id] = particle;
         }
 
-        // Animation logic here
         const speed = 0.05;
         const targetX = Math.min(app.renderer.width - 10, Math.max(10, particleData.x));
         const targetY = Math.min(app.renderer.height - 10, Math.max(10, particleData.y));
 
-        app.ticker.add(() => {
-            // Calculate movement difference
+        if (particle.tickerCallback) {
+            app.ticker.remove(particle.tickerCallback);
+        }
+
+        particle.tickerCallback = function() {
             const dx = targetX - particle.x;
             const dy = targetY - particle.y;
 
-            // Comic-style "bounce" effect
             if (Math.abs(dx) < 2 && Math.abs(dy) < 2) {
                 particle.x = targetX;
                 particle.y = targetY;
-                app.ticker.remove(this);
+                app.ticker.remove(particle.tickerCallback);
             } else {
                 particle.x += dx * speed;
                 particle.y += dy * speed;
 
-                // Boundary checks to ensure particles stay inside the PIXI.Application
                 if (particle.x < 10) particle.x = 10;
                 if (particle.x > app.renderer.width - 10) particle.x = app.renderer.width - 10;
                 if (particle.y < 10) particle.y = 10;
                 if (particle.y > app.renderer.height - 10) particle.y = app.renderer.height - 10;
             }
-        });
-    }
+        };
 
+        app.ticker.add(particle.tickerCallback);
+    }
     const ws = new WebSocket('ws://127.0.0.1:8000/ws');
 
     ws.onopen = () => {
@@ -60,7 +64,7 @@
 
     ws.onmessage = (event) => {
         const data = JSON.parse(event.data);
-        console.log("Received data from server:", data);
+        //console.log("Received data from server:", data);
         
         for (let particleData of data) {
             createOrUpdateParticle(particleData);
