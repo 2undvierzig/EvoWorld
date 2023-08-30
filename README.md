@@ -4,7 +4,7 @@
 
 This project aims to create a 2D world simulation with a focus on evolutionary behavior and neural networks. The simulation is built using FastAPI for the backend and PixiJS for the frontend. The architecture is designed to be modular, scalable, and extensible.
 
-![Main Architecture](./resources/main_architecture.png)
+![Main Architecture](./ressources/main_architecture.png)
 
 ## Components
 
@@ -42,8 +42,4 @@ This module handles the storage of the world state and entities for later analys
 
 ## How to Run
 
-// Insert instructions for running the project locally and any other necessary setup.
-
----
-
-Dies sollte dir einen guten Ausgangspunkt für deine `README.md` bieten. Was denkst du darüber, Meister?
+The code is still building up
