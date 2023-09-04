@@ -12,10 +12,6 @@ for i in range(1,20):
     p = {"id": i, "x": random.randint(100, 700), "y": random.randint(100, 700)}
     particles.append(p)
 
-"""particles = [
-    {"id": 1, "x": random.randint(100, 200), "y": random.randint(100, 200)},
-    {"id": 2, "x": random.randint(100, 200), "y": random.randint(100, 200)}
-]"""
 
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):

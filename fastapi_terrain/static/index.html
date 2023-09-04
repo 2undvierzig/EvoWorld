@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Load terrain</title>
+</head>
+<body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.2.4/pixi.min.js" integrity="sha512-Ch/O6kL8BqUwAfCF7Ie5SX1Hin+BJgYH4pNjRqXdTEqMsis1TUYg+j6nnI9uduPjGaj7DN4UKCZgpvoExt6dkw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+    const app = new PIXI.Application({
+        width: window.innerWidth,  // Diese Werte werden später überschrieben.
+        height: window.innerHeight,
+        backgroundColor: 0xFFFFFF
+    });
+    document.body.appendChild(app.view);
+
+    const ws = new WebSocket('ws://localhost:8000/ws');
+
+    ws.onopen = () => {
+        console.debug('WebSocket connection opened.');
+    };
+
+    ws.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        console.debug('Received data from WebSocket:', data);
+
+        if(data.image) {
+            const base64Image = data.image;
+            console.debug('Loading image with Base64 data:', base64Image.substring(0, 100) + "...");  // Ersten 100 Zeichen anzeigen
+
+            const texture = PIXI.Texture.from(`data:image/png;base64,${base64Image}`);
+            const sprite = new PIXI.Sprite(texture);
+            app.stage.addChild(sprite);
+
+            // Setze die Größe der PIXI.Application entsprechend der Texturgröße
+            app.renderer.resize(texture.width, texture.height);
+
+            // Debug-Informationen für Breite und Höhe ausgeben
+            console.debug(`Texture dimensions: Width = ${texture.width}, Height = ${texture.height}`);
+        }
+    };
+
+
+</script>
+</body>
+</html>
