@@ -8,11 +8,86 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.2.4/pixi.min.js" integrity="sha512-Ch/O6kL8BqUwAfCF7Ie5SX1Hin+BJgYH4pNjRqXdTEqMsis1TUYg+j6nnI9uduPjGaj7DN4UKCZgpvoExt6dkw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>
     const app = new PIXI.Application({
-        width: window.innerWidth,  // Diese Werte werden später überschrieben.
+        width: window.innerWidth,
         height: window.innerHeight,
         backgroundColor: 0xFFFFFF
     });
+    
+    //loading screen
+    let loadingText = new PIXI.Text('Laden...', { fontSize: 36, fill: 0x000000 });
+    loadingText.x = app.renderer.width / 2 - loadingText.width / 2;
+    loadingText.y = app.renderer.height / 2 - loadingText.height / 2;
+    app.stage.addChild(loadingText);
+    
     document.body.appendChild(app.view);
+
+    // Den Container für das Terrain erstellen
+    let terrainContainer = new PIXI.Container();
+    app.stage.addChild(terrainContainer);
+
+    let dragging = false;
+    let prevX = 0, prevY = 0;
+    const maxScale = 2;
+    const minScale = 1;
+
+    function ensureVisibility() {
+        // Hier berechnen wir die Grenzen, wie weit das Terrain verschoben werden darf.
+        const maxX = 0;
+        const maxY = 0;
+        const minX = app.renderer.width - terrainContainer.width * terrainContainer.scale.x;
+        const minY = app.renderer.height - terrainContainer.height * terrainContainer.scale.y;
+
+        terrainContainer.position.x = Math.min(maxX, Math.max(minX, terrainContainer.position.x));
+        terrainContainer.position.y = Math.min(maxY, Math.max(minY, terrainContainer.position.y));
+    }
+
+
+    app.view.addEventListener('mousedown', (event) => {
+        dragging = true;
+        prevX = event.clientX;
+        prevY = event.clientY;
+    });
+
+    app.view.addEventListener('mouseup', () => {
+        dragging = false;
+    });
+
+    app.view.addEventListener('mousemove', (event) => {
+        if (dragging) {
+            const dx = event.clientX - prevX;
+            const dy = event.clientY - prevY;
+            terrainContainer.position.x += dx;
+            terrainContainer.position.y += dy;
+            ensureVisibility();
+            prevX = event.clientX;
+            prevY = event.clientY;
+        }
+    });
+
+    app.view.addEventListener('wheel', (event) => {
+        const scaleAmount = 0.1;
+        const oldScaleX = terrainContainer.scale.x;
+        const oldScaleY = terrainContainer.scale.y;
+
+        const newScaleX = (event.deltaY < 0) ? 
+                          Math.min(oldScaleX + scaleAmount, maxScale) : 
+                          Math.max(oldScaleX - scaleAmount, minScale);
+        const newScaleY = (event.deltaY < 0) ? 
+                          Math.min(oldScaleY + scaleAmount, maxScale) : 
+                          Math.max(oldScaleY - scaleAmount, minScale);
+
+        const pointerX = event.clientX;
+        const pointerY = event.clientY;
+        const localCoords = terrainContainer.toLocal(new PIXI.Point(pointerX, pointerY));
+        const newPosX = pointerX - localCoords.x * newScaleX;
+        const newPosY = pointerY - localCoords.y * newScaleY;
+
+        terrainContainer.scale.set(newScaleX, newScaleY);
+        terrainContainer.position.set(newPosX, newPosY);
+
+        ensureVisibility();
+        event.preventDefault();
+    });
 
     const ws = new WebSocket('ws://localhost:8000/ws');
 
@@ -30,15 +105,20 @@
 
             const texture = PIXI.Texture.from(`data:image/png;base64,${base64Image}`);
             const sprite = new PIXI.Sprite(texture);
-            app.stage.addChild(sprite);
+            terrainContainer.addChild(sprite);  // Hier haben wir die Zeile geändert!
 
-            // Setze die Größe der PIXI.Application entsprechend der Texturgröße
-            app.renderer.resize(texture.width, texture.height);
+            // Ladebildschirm ausblenden, nachdem die Textur geladen ist
+            app.stage.removeChild(loadingText);
+
+            // Setze die Größe der PIXI.Application entsprechend der Texturgröße zurück
+            app.renderer.resize(texture.width, texture.height);  // Füge diese Zeile zurück!
 
             // Debug-Informationen für Breite und Höhe ausgeben
             console.debug(`Texture dimensions: Width = ${texture.width}, Height = ${texture.height}`);
         }
     };
+
+
 
 
 </script>
