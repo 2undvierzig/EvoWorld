@@ -35,3 +35,5 @@ async def websocket_endpoint(websocket: WebSocket):
         await websocket.send_json(particles)
         print(f"Sent updated particle data to client: {particles}")
         await asyncio.sleep(1)
+
+        
