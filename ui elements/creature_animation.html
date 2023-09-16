@@ -5,87 +5,47 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Atmende Bewegung mit Augen in PixiJS</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/6.0.4/browser/pixi.js" integrity="sha512-FC+B7IsEcnbzMzD5jbNblIYOGfQU59FlO3TXXAptESpHTDq/7xjG5F1vdlmbitePkdTlDMB7M6bbLbFGDUlBeg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js" integrity="sha512-H6cPm97FAsgIKmlBA4s774vqoN24V5gSQL4yBTDOY2su2DeXZVhQPxFK4P6GPdnZqM9fg1G3cMv5wD7e6cFLZQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="js/creature.js"></script>
 </head>
 <body>
     <script>
         // Initialization of the PIXI Application
         const app = new PIXI.Application({
-            width: 800,
-            height: 600,
-            backgroundColor: 0xFFFFFF
+            width: 2000,
+            height: 2000,
+            backgroundColor: 0xFFFFFF,
+            resolution: window.devicePixelRatio || 1,
+            autoDensity: true,
+            antialias: true
         });
 
         document.body.appendChild(app.view);
 
-        // Creation of the circle (creature)
-        const circle = new PIXI.Graphics();
-        circle.beginFill(0xFF0000); // Red color
-        circle.drawCircle(0, 0, 50); // x, y, radius
-        circle.endFill();
-        circle.x = app.view.width / 2;
-        circle.y = app.view.height / 2;
-        app.stage.addChild(circle);
-
-        // Create eyes for the creature
-        function createEye(xOffset, yOffset) {
-            const eye = new PIXI.Graphics();
-            eye.beginFill(0xFFFFFF); // White color
-            eye.drawCircle(0, 0, 10); // x, y, radius
-            eye.endFill();
-            eye.x = xOffset;
-            eye.y = yOffset;
-            return eye;
+        // Funktion, um eine zufällige Zahl zwischen min und max zu generieren
+        function getRandom(min, max) {
+            return Math.random() * (max - min) + min;
         }
 
-        function createPupil(xOffset, yOffset) {
-            const pupil = new PIXI.Graphics();
-            pupil.beginFill(0x000000); // Black color
-            pupil.drawCircle(0, -5, 5); // x, y, radius
-            pupil.endFill();
-            pupil.x = xOffset;
-            pupil.y = yOffset;
-            return pupil;
+        const creatures = [];
+
+        for(let i = 0; i < 300; i++) {
+            // Erstelle 20 Kreaturen an zufälligen Positionen
+            const x = 250;//getRandom(50, 750);
+            const y = 250;//getRandom(50, 550);
+            creatures.push(createCreature(app, 0xFF0000, x, y));
         }
 
-        const leftEye = createEye(-20, -10);
-        const rightEye = createEye(20, -10);
-        const leftPupil = createPupil(0, 0);
-        const rightPupil = createPupil(0, 0);
-        leftEye.addChild(leftPupil);
-        rightEye.addChild(rightPupil);
-
-        circle.addChild(leftEye, rightEye);
-
-        let elapsedTime = 0;
-
-        // Function to animate the circle
-        app.ticker.add((delta) => {
-            // English comments as per your request, Lord.
-            // Using sine function to create a "breathing" effect by scaling the circle.
-            circle.scale.set(1 + Math.sin(elapsedTime) * 0.05);
-            // Incrementing the elapsed time.
-            elapsedTime += 0.05 * delta;
-        });
-
-        // Function to make eyes blink
-        function blinkEyes() {
-            const blinkDuration = 0.1; // Duration of the blink in seconds
-
-            leftEye.scale.y = 0;
-            rightEye.scale.y = 0;
-
-            setTimeout(() => {
-                leftEye.scale.y = 1;
-                rightEye.scale.y = 1;
-                // Schedule the next blink
-                setTimeout(blinkEyes, Math.random() * 3000 + 1000); // Random time between 1 to 4 seconds
-            }, blinkDuration * 1000);
+        // Bewege jede Kreatur 10 Mal an eine zufällige Position
+        for(const creature of creatures) {
+            let delay = 0; 
+            for (let i = 0; i < 20; i++) {
+                const targetX = getRandom(50, 1750);
+                const targetY = getRandom(50, 1750);
+                gsap.delayedCall(delay, moveCreatureTo, [creature, targetX, targetY]);
+                delay += 1; 
+            }
         }
-
-        // Schedule the initial blink
-        setTimeout(blinkEyes, Math.random() * 3000 + 1000); // Random time between 1 to 4 seconds
     </script>
 </body>
 </html>
-
-
