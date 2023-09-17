@@ -19,6 +19,13 @@
             autoDensity: true,
             antialias: true
         });
+        
+        // Globale Container
+        const shadowContainer = new PIXI.Container();
+        const bodyContainer = new PIXI.Container();
+        
+        app.stage.addChild(shadowContainer);
+        app.stage.addChild(bodyContainer);
 
         document.body.appendChild(app.view);
 
@@ -27,32 +34,47 @@
             return Math.random() * (max - min) + min;
         }
 
-        const creatures = [];
+        const x = getRandom(50, 750);
+        const y = getRandom(50, 750);
+        const creature = new Creature(app, 0xFF0000, x, y, 35);
 
-        // Erstelle 5 verschiedene Kreaturen
-        for (let i = 0; i < 5; i++) {
-            const x = getRandom(50, 750);
-            const y = getRandom(50, 750);
-            const creature = new Creature(app, 0xFF0000, x, y, 35);
-            creatures.push(creature);
-        }
+        setTimeout(() => {
+            // Lasse die Kreatur sich teilen
+            const newX1 = creature.creatureContainer.x + getRandom(-80, 80);
+            const newY1 = creature.creatureContainer.y + getRandom(-80, 80);
+            const new_c1 = creature.divide(newX1, newY1);
 
-        creatures.forEach((creature, index) => {
             setTimeout(() => {
-                // Lasse jede Kreatur sich nach einer Weile teilen
-                const newX = creature.creatureContainer.x + getRandom(-80, 80);
-                const newY = creature.creatureContainer.y + getRandom(-80, 80);
-                creature.divide(newX, newY);
-            }, (index + 1) * 3000);  // Jede Zellteilung findet in 3-Sekunden-Intervallen statt
-        });
-
-        creatures.forEach((creature) => {
-            setTimeout(() => {
-                // Bewege jede Kreatur nach einer anderen kurzen Weile
+                // Bewege die ursprüngliche Kreatur
                 creature.moveCreatureTo(getRandom(50, 750), getRandom(50, 750));
-            }, 18000);  // Nach 18 Sekunden, nachdem alle Zellen sich geteilt haben
-        });
-    </script>
+                setTimeout(() => {
+                    // Bewege die ursprüngliche Kreatur ein zweites Mal
+                    creature.moveCreatureTo(getRandom(50, 750), getRandom(50, 750));
 
+                    setTimeout(() => {
+                        // Lasse die ursprüngliche Kreatur sich erneut teilen
+                        const newX2 = creature.creatureContainer.x + getRandom(-80, 80);
+                        const newY2 = creature.creatureContainer.y + getRandom(-80, 80);
+                        const new_c2 = creature.divide(newX2, newY2);
+
+                        setTimeout(() => {
+                            // Bewege die zuletzt geteilte Kreatur
+                            new_c2.moveCreatureTo(getRandom(50, 750), getRandom(50, 750));
+
+                            setTimeout(() => {
+                                // Bewege die zuletzt geteilte Kreatur ein zweites Mal
+                                new_c2.moveCreatureTo(getRandom(50, 750), getRandom(50, 750));
+                            }, 1500);  // Nach 1,5 Sekunden
+
+                        }, 1500);  // Nach 1,5 Sekunden
+
+                    }, 1500);  // Nach 1,5 Sekunden
+
+                }, 1500);  // Nach 1,5 Sekunden
+
+            }, 1500);  // Nach 1,5 Sekunden
+
+        }, 1500);  // Jede Aktion findet in 1,5-Sekunden-Intervallen statt
+    </script>
 </body>
 </html>
