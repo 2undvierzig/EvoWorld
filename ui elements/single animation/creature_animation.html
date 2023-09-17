@@ -29,11 +29,11 @@
 
         const creatures = [];
 
-        for(let i = 0; i < 300; i++) {
+        for(let i = 0; i < 30; i++) {
             // Erstelle 20 Kreaturen an zufälligen Positionen
             const x = 250;//getRandom(50, 750);
             const y = 250;//getRandom(50, 550);
-            creatures.push(createCreature(app, 0xFF0000, x, y));
+            creatures.push(createCreature(app, 0xFF0000, x, y, 35));
         }
 
         // Bewege jede Kreatur 10 Mal an eine zufällige Position
