@@ -6,7 +6,8 @@ class Creature {
         this.y = y;
         this.size = size;
         this.scale = size / 50;
-
+        this.currentRotation = 0;
+        
         // Hier erstellen wir einen globalen Container, der Schatten enthält
         if (!this.app.stage.shadowContainer) {
             this.app.stage.shadowContainer = new PIXI.Container();
@@ -93,47 +94,33 @@ class Creature {
             setTimeout(this.blinkEyes.bind(this, leftEye, rightEye), Math.random() * 3000 + 1000);
         }, blinkDuration * 1000);
     }
+    
 
     divide(newX, newY) {
         const newCreature = new Creature(this.app, this.color, newX, newY, this.size); 
         newCreature.creatureContainer.alpha = 0;
 
-        let offset = 0;
-
-        const dx = newX - this.creatureContainer.x;
-        const dy = newY - this.creatureContainer.y;
-        const distance = Math.sqrt(dx * dx + dy * dy);
-        const directionX = dx / distance;
-        const directionY = dy / distance;
-
-        const vesica = new PIXI.Graphics();
-        vesica.beginFill(this.color);
-
-        const drawVesica = () => {
-            vesica.clear();
-            vesica.beginFill(this.color);
-            vesica.drawCircle(0, 0, this.size);  // Originalkreis
-            vesica.drawCircle(offset * directionX, offset * directionY, this.size);  // Zweiter Kreis, der sich in Richtung des neuen Ziels bewegt
-            vesica.endFill();
-        };
-
-        this.creatureContainer.addChild(vesica);
-
-        gsap.to(vesica, {
+        // Füge die neue Kreatur hinzu und führe die "Herzschlag"-Animation aus
+        gsap.to(newCreature.creatureContainer, {
+            alpha: 1,
             duration: 0.5,
-            ease: "power2.inOut",
-            onUpdate: () => {
-                offset += this.size * 0.02;  // Hier steuern wir, wie schnell sich der zweite Kreis bewegt.
-                drawVesica();
-            },
+            ease: "power2.out",
             onComplete: () => {
-                vesica.clear();
-
-                // Füge eine sanfte Fade-In-Animation für die neue Kreatur hinzu
-                gsap.to(newCreature.creatureContainer, {
-                    alpha: 1,
-                    duration: 0.5,
-                    ease: "power2.out"
+                // Add the heartbeat effect
+                const pulseAnim = gsap.fromTo(newCreature.creatureContainer.scale, {
+                    x: 0.8,
+                    y: 0.8
+                }, {
+                    x: 1.2,
+                    y: 1.2,
+                    duration: 0.4,
+                    yoyo: true,
+                    repeat: 2,
+                    ease: "power2.inOut",
+                    onComplete: () => {
+                        // Reset the scale after the animation
+                        newCreature.creatureContainer.scale.set(1, 1);
+                    }
                 });
             }
         });
@@ -142,14 +129,16 @@ class Creature {
     }
 
 
+
+
     
     moveCreatureTo(targetX, targetY) {
         const dx = targetX - this.creatureContainer.x;
         const dy = targetY - this.creatureContainer.y;
-        const rotation = Math.atan2(dy, dx) + (Math.PI / 2);  // Berechnung des Winkels in Richtung des Zielpunktes
+        this.currentRotation = Math.atan2(dy, dx) + (Math.PI / 2);  // Berechnung des Winkels in Richtung des Zielpunktes
 
         gsap.to(this.creatureContainer, {
-            rotation: rotation,  // Drehung des gesamten Containers
+            rotation: this.currentRotation,  // Verwendung des aktuellen Rotationswerts
             duration: 0.2,
             ease: "power2.out",
             onComplete: () => {
@@ -163,3 +152,48 @@ class Creature {
         });
     }
 }
+
+
+
+
+    /**die() {
+        // Schritt 1: Zeichne ein "X" über die Augen
+        const xGraphics = new PIXI.Graphics();
+        xGraphics.lineStyle(2, 0x000000, 1);
+        xGraphics.moveTo(-10, -10);
+        xGraphics.lineTo(10, 10);
+        xGraphics.moveTo(-10, 10);
+        xGraphics.lineTo(10, -10);
+        this.creatureContainer.addChild(xGraphics);
+
+        // Schritt 2: Lass die Kreatur sanft verschwinden
+        gsap.to(this.creatureContainer, {
+            alpha: 0,
+            duration: 1,
+            onComplete: () => {
+                this.creatureContainer.removeChild(xGraphics);
+                this.creatureContainer.parent.removeChild(this.creatureContainer);
+            }
+        });
+
+        // Schritt 3: Staubwolken-Animation
+        for (let i = 0; i < 20; i++) {
+            const particle = new PIXI.Graphics();
+            particle.beginFill(0x000000);
+            particle.drawCircle(0, 0, Math.random() * 3 + 1);
+            particle.endFill();
+            particle.x = this.creatureContainer.x + Math.random() * 40 - 20;
+            particle.y = this.creatureContainer.y + Math.random() * 40 - 20;
+            this.creatureContainer.parent.addChild(particle);
+
+            gsap.to(particle, {
+                alpha: 0,
+                x: particle.x + (Math.random() - 0.5) * 80,
+                y: particle.y + (Math.random() - 0.5) * 80,
+                duration: 1,
+                onComplete: () => {
+                    particle.parent.removeChild(particle);
+                }
+            });
+        }
+    }**/
