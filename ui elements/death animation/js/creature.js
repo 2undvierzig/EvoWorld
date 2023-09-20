@@ -17,6 +17,7 @@ class Creature {
         this.creatureContainer = this.createCreatureContainer();
         this.app.stage.addChild(this.creatureContainer);
     }
+    
 
     createCreatureContainer() {
         const creatureContainer = new PIXI.Container();
@@ -48,15 +49,21 @@ class Creature {
         
 
         let elapsedTime = 0;
+        
+        //this.app.ticker.add(this.updateCreature.bind(this));
 
-        this.app.ticker.add((delta) => {
-            const scale = 1 + Math.sin(elapsedTime) * 0.05
-            this.circle.scale.set(scale);
-            this.shadow.scale.set(1 / scale);
-            this.shadow.x = creatureContainer.x;
-            this.shadow.y = creatureContainer.y + 20 * this.scale;
+        this.tickCallback = (delta) => {
+            if (this.shadow && this.creatureContainer && this.circle) {
+                const scale = 1 + Math.sin(elapsedTime) * 0.05;
+                this.circle.scale.set(scale);
+                this.shadow.scale.set(1 / scale);
+                this.shadow.x = this.creatureContainer.x;
+                this.shadow.y = this.creatureContainer.y + 20 * this.scale;
+            }
             elapsedTime += 0.05 * delta;
-        });
+        };
+        
+        this.app.ticker.add(this.tickCallback, this);
 
         setTimeout(this.blinkEyes.bind(this, this.leftEye, this.rightEye), Math.random() * 3000 + 1000);
 
@@ -169,8 +176,15 @@ class Creature {
             delay: 0.5,
             ease: "power2.out",
             onComplete: () => {
-                this.creatureContainer.destroy();
-                this.shadow.destroy();
+                this.app.ticker.remove(this.tickCallback, this);
+                if (this.creatureContainer) {
+                    this.creatureContainer.destroy();
+                    this.creatureContainer = null;
+                }
+                if (this.shadow) {
+                    this.shadow.destroy();
+                    this.shadow = null;
+                }
             }
         });
     }

@@ -39,9 +39,20 @@
         const creature = new Creature(app, 0xFF0000, x, y, 25);
 
         const creatures = [creature];
+        
+        function destroyCreature(creature) {
+            creature.die();
+            gsap.killTweensOf(creature);
+            delete creature
+            creature = null
+        }
+
 
         setTimeout(() => {
-            creatures.forEach(creature => creature.die());
+            destroyCreature(creatures[0]);
+
+            // Lösche alle Kreaturen aus dem Array
+            creatures.length = 0;
         }, 1500);
     </script>
 </body>
