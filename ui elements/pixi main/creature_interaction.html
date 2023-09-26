@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atmende Bewegung mit Augen in PixiJS</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/6.0.4/browser/pixi.js" integrity="sha512-FC+B7IsEcnbzMzD5jbNblIYOGfQU59FlO3TXXAptESpHTDq/7xjG5F1vdlmbitePkdTlDMB7M6bbLbFGDUlBeg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js" integrity="sha512-H6cPm97FAsgIKmlBA4s774vqoN24V5gSQL4yBTDOY2su2DeXZVhQPxFK4P6GPdnZqM9fg1G3cMv5wD7e6cFLZQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="js/creature.js"></script>
+    
+      <style>
+    body, html {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+    <script src="js/world.js"></script>
+    <script>
+        
+        // Initialize the World
+        const w = new World();
+        app = w.pixiApp
+        
+        // Globale Container
+        const shadowContainer = new PIXI.Container();
+        const bodyContainer = new PIXI.Container();
+        
+        app.stage.addChild(shadowContainer);
+        app.stage.addChild(bodyContainer);
+
+        document.body.appendChild(app.view);
+
+        // Funktion, um eine zufällige Zahl zwischen min und max zu generieren
+        function getRandom(min, max) {
+            return Math.random() * (max - min) + min;
+        }
+
+        const x = getRandom(50, 750);
+        const y = getRandom(50, 750);
+        const creature = new Creature(app, 0xFF0000, x, y, 25);
+
+        const creatures = [creature];
+        
+        function destroyCreature(creature) {
+            creature.die();
+            gsap.killTweensOf(creature);
+            delete creature
+            creature = null
+        }
+
+
+        setTimeout(() => {
+            //destroyCreature(creatures[0]);
+
+            // Lösche alle Kreaturen aus dem Array
+            //creatures.length = 0;
+        }, 1500);
+    </script>
+</body>
+</html>

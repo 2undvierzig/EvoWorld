@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>WebSocket Client</title>
+    <script>
+        // English comment: Initialize WebSocket
+        const socket = new WebSocket("ws://127.0.0.1:8000/ws");
+        
+        socket.addEventListener('open', function(event) {
+            console.log("WebSocket is open now.");
+        });
+
+        // English comment: Listen for new messages and log them
+        socket.addEventListener('message', function(event) {
+            console.log("Received from server:", event.data);
+            // Add your PixiJS logic here to update the world visualization
+        });
+    </script>
+</head>
+<body>
+    <h1>WebSocket Client</h1>
+</body>
+</html>
