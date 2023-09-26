@@ -1,6 +1,8 @@
 class Creature {
-    constructor(app, color, x, y, size) {
+    constructor(app, color, x, y, size, shadowContainer, bodyContainer) {
         this.app = app;
+        this.shadowContainer = shadowContainer;
+        this.bodyContainer = bodyContainer;
         this.color = color;
         this.x = x;
         this.y = y;
@@ -8,14 +10,9 @@ class Creature {
         this.scale = size / 50;
         this.currentRotation = 0;
         
-        // Hier erstellen wir einen globalen Container, der Schatten enthält
-        if (!this.app.stage.shadowContainer) {
-            this.app.stage.shadowContainer = new PIXI.Container();
-            this.app.stage.addChildAt(this.app.stage.shadowContainer, 0);
-        }
 
         this.creatureContainer = this.createCreatureContainer();
-        this.app.stage.addChild(this.creatureContainer);
+        this.bodyContainer.addChild(this.creatureContainer);
     }
     
 
@@ -30,7 +27,7 @@ class Creature {
         this.shadow.drawCircle(0, 0, 45 * this.scale);
         this.shadow.endFill();
         this.shadow.y = 20 * this.scale;
-        this.app.stage.shadowContainer.addChild(this.shadow);
+        this.shadowContainer.addChild(this.shadow);
         creatureContainer.shadow = this.shadow;
 
         this.circle = new PIXI.Graphics();
@@ -49,8 +46,6 @@ class Creature {
         
 
         let elapsedTime = 0;
-        
-        //this.app.ticker.add(this.updateCreature.bind(this));
 
         this.tickCallback = (delta) => {
             if (this.shadow && this.creatureContainer && this.circle) {
@@ -105,7 +100,7 @@ class Creature {
     
 
     divide(newX, newY) {
-        const newCreature = new Creature(this.app, this.color, newX, newY, this.size); 
+        const newCreature = new Creature(this.app, this.color, newX, newY, this.size, this.shadowContainer, this.bodyContainer); 
         newCreature.creatureContainer.alpha = 0;
 
         // Füge die neue Kreatur hinzu und führe die "Herzschlag"-Animation aus
@@ -215,5 +210,3 @@ class Creature {
         });
     }
 }
-
-

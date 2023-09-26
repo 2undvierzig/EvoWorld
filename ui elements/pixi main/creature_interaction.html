@@ -25,26 +25,13 @@
         // Initialize the World
         const w = new World();
         app = w.pixiApp
-        
-        // Globale Container
-        const shadowContainer = new PIXI.Container();
-        const bodyContainer = new PIXI.Container();
-        
-        app.stage.addChild(shadowContainer);
-        app.stage.addChild(bodyContainer);
-
         document.body.appendChild(app.view);
-
-        // Funktion, um eine zufällige Zahl zwischen min und max zu generieren
-        function getRandom(min, max) {
-            return Math.random() * (max - min) + min;
-        }
-
-        const x = getRandom(50, 750);
-        const y = getRandom(50, 750);
-        const creature = new Creature(app, 0xFF0000, x, y, 25);
-
-        const creatures = [creature];
+        
+        
+        const creature = w.createCreature(100, 200, 0x00FF00);
+        const creature2 = creature.divide(100, 100);
+        creature.moveCreatureTo(200, 200);
+        const creatures = [creature, creature2];
         
         function destroyCreature(creature) {
             creature.die();
@@ -55,10 +42,10 @@
 
 
         setTimeout(() => {
-            //destroyCreature(creatures[0]);
+            destroyCreature(creatures[0]);
 
             // Lösche alle Kreaturen aus dem Array
-            //creatures.length = 0;
+            creatures.length = 0;
         }, 1500);
     </script>
 </body>
